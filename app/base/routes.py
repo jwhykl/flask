@@ -4,17 +4,17 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask import jsonify, render_template, redirect, request, url_for
-from flask_login import (
-    current_user,
-    login_required,
-    login_user,
-    logout_user
-)
+#from flask_login import (
+#    current_user,
+#    login_required,
+#    login_user,
+#    logout_user
+#)
 
 from app import db, login_manager
 from app.base import blueprint
-from app.base.forms import LoginForm, CreateAccountForm
-from app.base.models import User
+#from app.base.forms import LoginForm, CreateAccountForm
+#from app.base.models import User
 
 from app.base.util import verify_pass
 
@@ -26,16 +26,16 @@ def route_default():
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
+    return redirect(url_for('home_blueprint.index'))
     login_form = LoginForm(request.form)
     if 'login' in request.form:
-        
         # read form data
         username = request.form['username']
         password = request.form['password']
 
         # Locate user
         user = User.query.filter_by(username=username).first()
-        
+
         # Check the password
         if user and verify_pass( password, user.password):
 
@@ -44,7 +44,6 @@ def login():
 
         # Something (user or pass) is not ok
         return render_template( 'accounts/login.html', msg='Wrong user or password', form=login_form)
-
     if not current_user.is_authenticated:
         return render_template( 'accounts/login.html',
                                 form=login_form)
@@ -62,7 +61,7 @@ def register():
         # Check usename exists
         user = User.query.filter_by(username=username).first()
         if user:
-            return render_template( 'accounts/register.html', 
+            return render_template( 'accounts/register.html',
                                     msg='Username already registered',
                                     success=False,
                                     form=create_account_form)
@@ -70,8 +69,8 @@ def register():
         # Check email exists
         user = User.query.filter_by(email=email).first()
         if user:
-            return render_template( 'accounts/register.html', 
-                                    msg='Email already registered', 
+            return render_template( 'accounts/register.html',
+                                    msg='Email already registered',
                                     success=False,
                                     form=create_account_form)
 
@@ -80,8 +79,8 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        return render_template( 'accounts/register.html', 
-                                msg='User created please <a href="/login">login</a>', 
+        return render_template( 'accounts/register.html',
+                                msg='User created please <a href="/login">login</a>',
                                 success=True,
                                 form=create_account_form)
 
